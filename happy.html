@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python IDE</title>
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@latest/dist/skulpt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@latest/dist/skulpt-stdlib.js"></script>
+</head>
+<body>
+  <h1>Python IDE</h1>
+  <textarea id="code" rows="10" cols="50">print("Hello, World!")</textarea>
+  <br>
+  <button onclick="runCode()">Run</button>
+  <pre id="output"></pre>
+
+  <script>
+    function runCode() {
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = "";
+      Sk.configure({
+        output: (text) => outputDiv.innerHTML += text,
+        read: (x) => {
+          if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+            throw `File not found: '${x}'`;
+          }
+          return Sk.builtinFiles["files"][x];
+        }
+      });
+      const code = document.getElementById("code").value;
+      Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code)).catch((err) => {
+        outputDiv.innerHTML = err.toString();
+      });
+    }
+  </script>
+</body>
+</html>
